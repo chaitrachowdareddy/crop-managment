@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Farmer Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="page-header-title mb-1">Welcome, {{ profile.name }}</h1>
+        <p class="page-header-subtitle mb-0">{{ profile.village }} · {{ profile.phone }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-success" href="{{ url_for('add_production') }}">Record Production</a>
+        <a class="btn btn-outline-success" href="{{ url_for('add_supply') }}">Submit Supply</a>
+    </div>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-6"><div class="stat-card"><div><div class="stat-value">₹{{ "{:,.2f}".format(earnings|float) }}</div><div class="stat-label">Supply Earnings</div></div></div></div>
+    <div class="col-md-6"><div class="stat-card"><div><div class="stat-value">{{ supplies|length }}</div><div class="stat-label">Supply Records</div></div></div></div>
+</div>
+<div class="card card-custom mb-4">
+    <div class="card-header fw-bold">My Farm Profile</div>
+    <div class="card-body">{{ profile.address }} · Registered {{ profile.registration_date }}</div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header fw-bold">Seasonal Production</div>
+            <div class="table-responsive"><table class="table table-hover mb-0">
+                <thead><tr><th>Crop</th><th>Quantity</th><th>Season</th><th>Date</th></tr></thead>
+                <tbody>{% for row in production %}<tr><td>{{ row.crop_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td><td>{{ row.season }}</td><td>{{ row.production_date }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted">No production records.</td></tr>{% endfor %}</tbody>
+            </table></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header fw-bold">My Supplies & Earnings</div>
+            <div class="table-responsive"><table class="table table-hover mb-0">
+                <thead><tr><th>Crop</th><th>Center</th><th>Quantity</th><th>Paid</th></tr></thead>
+                <tbody>{% for row in supplies %}<tr><td>{{ row.crop_name }}</td><td>{{ row.center_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td><td>₹{{ "{:,.2f}".format(row.total_amount|float) }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted">No supplies recorded.</td></tr>{% endfor %}</tbody>
+            </table></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

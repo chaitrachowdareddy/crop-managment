@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Distributors Directory{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-truck-ramp-box text-warning"></i> Wholesale Distributors
+        </h2>
+        <p class="page-header-subtitle">Registered bulk agro-commodity purchasers and wholesale intermediaries.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="search-box-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control table-search-input" data-target-table="distTable" placeholder="Search distributor, phone, city...">
+        </div>
+        <a href="{{ url_for('add_distributor') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Add Distributor
+        </a>
+    </div>
+</div>
+
+<div class="table-custom-wrapper">
+    <div class="table-responsive">
+        <table class="table table-hover table-custom mb-0" id="distTable">
+            <thead>
+                <tr>
+                    <th>Distributor ID</th>
+                    <th>Distributor Name</th>
+                    <th>Phone</th>
+                    <th>Business Address</th>
+                    <th>Registered At</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if distributors %}
+                    {% for d in distributors %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ d.distributor_id }}</td>
+                        <td class="fw-semibold text-dark">{{ d.distributor_name }}</td>
+                        <td><i class="fas fa-phone-alt text-muted me-1 small"></i>{{ d.phone }}</td>
+                        <td class="text-muted small">{{ d.address }}</td>
+                        <td class="text-muted small">{{ d.created_at }}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_distributor', distributor_id=d.distributor_id) }}" class="btn btn-outline-primary" title="Edit Distributor">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('delete_distributor', distributor_id=d.distributor_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete distributor {{ d.distributor_name }}?');">
+                                    <button type="submit" class="btn btn-outline-danger" title="Delete Distributor">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="no-records-row">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-truck-field display-6 d-block mb-3 text-secondary"></i>
+                            No distributors found. Click <strong>Add Distributor</strong> to register one.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

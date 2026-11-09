@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Warehouse Inventory{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-boxes-stacked text-warning"></i> Live Warehouse Inventory
+        </h2>
+        <p class="page-header-subtitle">Available crop stock stockpiled across all storage hubs with threshold alerts.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="search-box-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control table-search-input" data-target-table="inventoryTable" placeholder="Search warehouse, crop...">
+        </div>
+        <a href="{{ url_for('add_inventory') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Adjust / Stock In
+        </a>
+    </div>
+</div>
+
+<div class="table-custom-wrapper">
+    <div class="table-responsive">
+        <table class="table table-hover table-custom mb-0" id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Inv ID</th>
+                    <th>Warehouse Hub</th>
+                    <th>Crop Variety</th>
+                    <th>Crop Type</th>
+                    <th>Available Quantity</th>
+                    <th>Stock Status</th>
+                    <th>Last Updated</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if inventory %}
+                    {% for inv in inventory %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ inv.inventory_id }}</td>
+                        <td class="fw-semibold text-dark">{{ inv.warehouse_name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ inv.crop_name }}</span></td>
+                        <td><span class="badge badge-crop-type">{{ inv.crop_type }}</span></td>
+                        <td class="fw-bold text-success fs-6">{{ inv.quantity }} {{ inv.unit }}</td>
+                        <td>
+                            {% if inv.quantity < 300 %}
+                                <span class="badge bg-danger"><i class="fas fa-arrow-down me-1"></i>Low Stock</span>
+                            {% elif inv.quantity < 600 %}
+                                <span class="badge bg-warning text-dark"><i class="fas fa-minus me-1"></i>Moderate</span>
+                            {% else %}
+                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Adequate</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ inv.last_updated }}</td>
+                        <td class="text-center">
+                            <form action="{{ url_for('delete_inventory', inventory_id=inv.inventory_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this inventory record?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove Stock Record">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="no-records-row">
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="fas fa-box-open display-6 d-block mb-3 text-secondary"></i>
+                            No stock inventory found. Click <strong>Adjust / Stock In</strong> to add stock.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

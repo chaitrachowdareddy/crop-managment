@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Customer Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div><h1 class="page-header-title mb-1">Customer Dashboard</h1><p class="page-header-subtitle mb-0">Browse produce available at retailers and review your order history.</p></div>
+    <a class="btn btn-success" href="{{ url_for('customer_shop') }}">Browse Produce</a>
+</div>
+<div class="card card-custom mb-4">
+    <div class="card-header fw-bold">Available Retail Produce</div>
+    <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Crop</th><th>Retailer</th><th>Available</th><th>Price / Unit</th><th></th></tr></thead>
+    <tbody>{% for row in catalog %}<tr><td>{{ row.crop_name }}</td><td>{{ row.retailer_name }}</td><td>{{ row.stock_quantity }} {{ row.unit }}</td><td>₹{{ "{:,.2f}".format(row.price_per_unit|float) }}</td><td><a href="{{ url_for('customer_shop') }}" class="btn btn-sm btn-outline-success">Buy</a></td></tr>{% else %}<tr><td colspan="5" class="text-center text-muted">No retail produce is currently available.</td></tr>{% endfor %}</tbody></table></div>
+</div>
+<div class="card card-custom">
+    <div class="card-header fw-bold">My Purchase History</div>
+    <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Order</th><th>Crop</th><th>Retailer</th><th>Quantity</th><th>Total</th><th>Date</th><th></th></tr></thead>
+    <tbody>{% for row in orders %}<tr><td>#{{ row.sale_id }}</td><td>{{ row.crop_name }}</td><td>{{ row.retailer_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td><td>₹{{ "{:,.2f}".format(row.total_price|float) }}</td><td>{{ row.sale_date }}</td><td><a href="{{ url_for('customer_track', sale_id=row.sale_id) }}" class="btn btn-sm btn-outline-primary">Track</a></td></tr>{% else %}<tr><td colspan="7" class="text-center text-muted">No orders found.</td></tr>{% endfor %}</tbody></table></div>
+</div>
+{% endblock %}

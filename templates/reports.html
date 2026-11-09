@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+
+{% block title %}DBMS Analytical Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-file-invoice text-success"></i> DBMS Analytical Reports
+        </h2>
+        <p class="page-header-subtitle">Comprehensive SQL reporting demonstrating JOINs, Aggregates, Group By, Subqueries, and Views.</p>
+    </div>
+    <div class="d-flex gap-2 no-print">
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="fas fa-print me-1"></i> Print / Save PDF
+        </button>
+    </div>
+</div>
+
+<!-- Report Navigation Tabs -->
+<ul class="nav nav-pills mb-4 flex-nowrap overflow-auto py-2 no-print" id="reportTabs" role="tablist" style="gap: 0.5rem;">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-semibold" id="r1-tab" data-bs-toggle="tab" data-bs-target="#r1" type="button" role="tab">1. Farmer Supply</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r2-tab" data-bs-toggle="tab" data-bs-target="#r2" type="button" role="tab">2. Crop Production</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r3-tab" data-bs-toggle="tab" data-bs-target="#r3" type="button" role="tab">3. Crop Inventory</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r4-tab" data-bs-toggle="tab" data-bs-target="#r4" type="button" role="tab">4. Warehouse Stock</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r5-tab" data-bs-toggle="tab" data-bs-target="#r5" type="button" role="tab">5. Distributor Purchases</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r6-tab" data-bs-toggle="tab" data-bs-target="#r6" type="button" role="tab">6. Retailer Supplies</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r7-tab" data-bs-toggle="tab" data-bs-target="#r7" type="button" role="tab">7. Logistics Status</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r8-tab" data-bs-toggle="tab" data-bs-target="#r8" type="button" role="tab">8. Customer Sales</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r9-tab" data-bs-toggle="tab" data-bs-target="#r9" type="button" role="tab">9. Revenue Summary</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r10-tab" data-bs-toggle="tab" data-bs-target="#r10" type="button" role="tab">10. Top Supplied</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="r11-tab" data-bs-toggle="tab" data-bs-target="#r11" type="button" role="tab">11. Low Stock</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="reportTabsContent">
+    <!-- Report 1: Farmer-wise Crop Supply -->
+    <div class="tab-pane fade show active" id="r1" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-user-tie text-success me-2"></i> Report 1: Farmer-Wise Crop Supply & Earnings</h5>
+            <p class="small text-muted mb-3">Aggregated total quantity supplied and gross earnings per registered farmer using <code>LEFT JOIN</code>, <code>GROUP BY</code>, and <code>SUM()</code>.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Farmer ID</th>
+                            <th>Farmer Name</th>
+                            <th>Village</th>
+                            <th>Phone</th>
+                            <th>Total Supplies</th>
+                            <th>Total Quantity Supplied</th>
+                            <th>Total Earnings (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report1 %}
+                        <tr>
+                            <td class="fw-bold text-muted">#{{ r.farmer_id }}</td>
+                            <td class="fw-semibold">{{ r.farmer_name }}</td>
+                            <td>{{ r.village }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ r.total_supplies_count }}</span></td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity_supplied) }}</td>
+                            <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(r.total_earnings) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-3 p-3 bg-light rounded-3 border no-print">
+                <small class="text-muted fw-bold d-block mb-1"><i class="fas fa-code text-primary me-1"></i> DBMS SQL Used:</small>
+                <code class="small text-dark">SELECT f.farmer_id, f.name, f.village, f.phone, COUNT(cs.supply_id), COALESCE(SUM(cs.quantity), 0), COALESCE(SUM(cs.total_amount), 0) FROM Farmer f LEFT JOIN Crop_Supply cs ON f.farmer_id = cs.farmer_id GROUP BY f.farmer_id, f.name, f.village, f.phone;</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 2: Crop-wise Total Production -->
+    <div class="tab-pane fade" id="r2" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-leaf text-success me-2"></i> Report 2: Crop-Wise Total Harvest Production</h5>
+            <p class="small text-muted mb-3">Overall agricultural harvest yield output and average production per crop.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Crop Name</th>
+                            <th>Type</th>
+                            <th>Production Records</th>
+                            <th>Total Quantity Produced</th>
+                            <th>Average Harvest Yield</th>
+                            <th>Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report2 %}
+                        <tr>
+                            <td class="fw-semibold">{{ r.crop_name }}</td>
+                            <td><span class="badge badge-crop-type">{{ r.crop_type }}</span></td>
+                            <td>{{ r.records_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_produced) }}</td>
+                            <td>{{ "{:,.2f}".format(r.avg_production) }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ r.unit }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 3: Crop-wise Available Inventory -->
+    <div class="tab-pane fade" id="r3" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-boxes-stacked text-warning me-2"></i> Report 3: Crop-Wise Available Stock Inventory</h5>
+            <p class="small text-muted mb-3">Consolidated storage reserves across all state warehouses.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Crop ID</th>
+                            <th>Crop Name</th>
+                            <th>Classification</th>
+                            <th>Total In-Stock</th>
+                            <th>Stored In Warehouses</th>
+                            <th>Standard Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report3 %}
+                        <tr>
+                            <td class="fw-bold text-muted">#{{ r.crop_id }}</td>
+                            <td class="fw-semibold">{{ r.crop_name }}</td>
+                            <td><span class="badge badge-crop-type">{{ r.crop_type }}</span></td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_stock) }}</td>
+                            <td>{{ r.warehouses_count }} Warehouse(s)</td>
+                            <td>{{ r.unit }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 4: Warehouse-wise Inventory -->
+    <div class="tab-pane fade" id="r4" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-warehouse text-secondary me-2"></i> Report 4: Warehouse Capacity & Occupancy Utilization</h5>
+            <p class="small text-muted mb-3">Occupancy percentages and available vacant capacities per warehouse facility.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Warehouse Hub</th>
+                            <th>Location</th>
+                            <th>Total Capacity</th>
+                            <th>Occupied Stock</th>
+                            <th>Available Space</th>
+                            <th>Utilization %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report4 %}
+                        <tr>
+                            <td class="fw-semibold">{{ r.warehouse_name }}</td>
+                            <td class="small text-muted">{{ r.location }}</td>
+                            <td>{{ "{:,.1f}".format(r.capacity) }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.1f}".format(r.total_occupied or 0) }}</td>
+                            <td>{{ "{:,.1f}".format(r.available_space or r.capacity) }}</td>
+                            <td class="fw-bold">{{ r.utilization_percent or 0 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 5: Distributor Purchases -->
+    <div class="tab-pane fade" id="r5" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-truck-ramp-box text-warning me-2"></i> Report 5: Distributor Wholesale Purchases</h5>
+            <p class="small text-muted mb-3">Total volume and wholesale expenditure per registered distributor.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Distributor</th>
+                            <th>Phone</th>
+                            <th>Total Orders</th>
+                            <th>Total Quantity Purchased</th>
+                            <th>Total Expenditure (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report5 %}
+                        <tr>
+                            <td class="fw-semibold">{{ r.distributor_name }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td>{{ r.orders_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity) }}</td>
+                            <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(r.total_spent) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 6: Retailer Supplies -->
+    <div class="tab-pane fade" id="r6" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-store text-primary me-2"></i> Report 6: Retailer Procurement Supplies</h5>
+            <p class="small text-muted mb-3">Dispatches received by retail outlets from wholesale distributors.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Retailer Name</th>
+                            <th>Phone</th>
+                            <th>Shipments Received</th>
+                            <th>Total Quantity Received</th>
+                            <th>Total Purchase Value (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report6 %}
+                        <tr>
+                            <td class="fw-semibold">{{ r.retailer_name }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td>{{ r.supplies_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity) }}</td>
+                            <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(r.total_cost) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 7: Transportation Status -->
+    <div class="tab-pane fade" id="r7" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-route text-primary me-2"></i> Report 7: Transportation & Fleet Status Breakdown</h5>
+            <p class="small text-muted mb-3">Breakdown of shipments by transit status with total cargo volume.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Shipment Status</th>
+                            <th>Total Trips</th>
+                            <th>Total Cargo Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report7 %}
+                        <tr>
+                            <td>
+                                {% if r.status == 'Delivered' %}
+                                    <span class="badge badge-status badge-delivered">Delivered</span>
+                                {% elif r.status == 'In Transit' %}
+                                    <span class="badge badge-status badge-in-transit">In Transit</span>
+                                {% else %}
+                                    <span class="badge badge-status badge-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">{{ r.trips_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 8: Customer Sales -->
+    <div class="tab-pane fade" id="r8" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-cart-shopping text-success me-2"></i> Report 8: Customer Purchases & Order Volume</h5>
+            <p class="small text-muted mb-3">Consumer retail order analysis showing purchase frequency and total spent.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Total Purchases</th>
+                            <th>Total Volume Bought</th>
+                            <th>Total Spent (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report8 %}
+                        <tr>
+                            <td class="fw-semibold">{{ r.customer_name }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td>{{ r.purchases_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity) }}</td>
+                            <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(r.total_spent) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 9: Total Revenue Summary -->
+    <div class="tab-pane fade" id="r9" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-money-bill-trend-up text-success me-2"></i> Report 9: End-to-End Financial Turnover Overview</h5>
+            <p class="small text-muted mb-3">Cumulative monetary turnover across all four supply chain transactional tiers.</p>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="small text-muted">Tier 1: Farmer Procurement</div>
+                        <div class="fs-5 fw-bold text-success">₹{{ "{:,.2f}".format(report9.farmer_supply_total or 0) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="small text-muted">Tier 2: Distributor Purchases</div>
+                        <div class="fs-5 fw-bold text-primary">₹{{ "{:,.2f}".format(report9.distributor_purchase_total or 0) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="small text-muted">Tier 3: Retail Supplies</div>
+                        <div class="fs-5 fw-bold text-warning">₹{{ "{:,.2f}".format(report9.retail_supply_total or 0) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="small text-muted">Tier 4: Consumer Sales</div>
+                        <div class="fs-5 fw-bold text-dark">₹{{ "{:,.2f}".format(report9.retail_sales_total or 0) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 10: Most Supplied Crop -->
+    <div class="tab-pane fade" id="r10" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-trophy text-warning me-2"></i> Report 10: Top Supplied Crops (Ranked by Quantity)</h5>
+            <p class="small text-muted mb-3">Ranked order of crops supplied by farmers using <code>ORDER BY total_supplied DESC</code>.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Crop Name</th>
+                            <th>Category</th>
+                            <th>Supplies Logged</th>
+                            <th>Total Quantity Supplied</th>
+                            <th>Total Monetary Value (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in report10 %}
+                        <tr>
+                            <td class="fw-bold">#{{ loop.index }}</td>
+                            <td class="fw-semibold">{{ r.crop_name }}</td>
+                            <td><span class="badge badge-crop-type">{{ r.crop_type }}</span></td>
+                            <td>{{ r.supply_count }}</td>
+                            <td class="fw-bold text-success">{{ "{:,.2f}".format(r.total_quantity) }} {{ r.unit }}</td>
+                            <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(r.total_value) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report 11: Low-Stock Crops -->
+    <div class="tab-pane fade" id="r11" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-1 text-dark"><i class="fas fa-triangle-exclamation text-danger me-2"></i> Report 11: Low-Stock & Critical Inventory Thresholds</h5>
+            <p class="small text-muted mb-3">Warehouses with crop stock levels below the 300 unit threshold requiring replenishment.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Warehouse Hub</th>
+                            <th>Crop Name</th>
+                            <th>Current Stock</th>
+                            <th>Standard Unit</th>
+                            <th>Alert Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if report11 %}
+                            {% for r in report11 %}
+                            <tr>
+                                <td class="fw-semibold">{{ r.warehouse_name }}</td>
+                                <td>{{ r.crop_name }}</td>
+                                <td class="fw-bold text-danger">{{ "{:,.2f}".format(r.quantity) }}</td>
+                                <td>{{ r.unit }}</td>
+                                <td><span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Critical Low Stock</span></td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">All warehouse stock levels are currently above threshold!</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

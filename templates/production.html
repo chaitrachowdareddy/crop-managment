@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Crop Production Logs{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-leaf text-success"></i> Crop Production Logs
+        </h2>
+        <p class="page-header-subtitle">Seasonal harvest yield output recorded by registered farmers.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="search-box-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control table-search-input" data-target-table="prodTable" placeholder="Search farmer, crop, season...">
+        </div>
+        <a href="{{ url_for('add_production') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Record Production
+        </a>
+    </div>
+</div>
+
+<div class="table-custom-wrapper">
+    <div class="table-responsive">
+        <table class="table table-hover table-custom mb-0" id="prodTable">
+            <thead>
+                <tr>
+                    <th>Prod ID</th>
+                    <th>Farmer</th>
+                    <th>Crop Produced</th>
+                    <th>Harvest Quantity</th>
+                    <th>Season</th>
+                    <th>Production Date</th>
+                    {% if session.get('role') == 'admin' %}<th class="text-center">Action</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if productions %}
+                    {% for p in productions %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ p.production_id }}</td>
+                        <td class="fw-semibold">{{ p.farmer_name }} <span class="small text-muted">({{ p.village }})</span></td>
+                        <td><span class="badge bg-light text-dark border">{{ p.crop_name }}</span></td>
+                        <td class="fw-bold text-success">{{ p.quantity }} {{ p.unit }}</td>
+                        <td>
+                            {% if p.season == 'Kharif' %}
+                                <span class="badge bg-success bg-opacity-25 text-success">Kharif (Monsoon)</span>
+                            {% elif p.season == 'Rabi' %}
+                                <span class="badge bg-warning bg-opacity-25 text-dark">Rabi (Winter)</span>
+                            {% elif p.season == 'Zaid' %}
+                                <span class="badge bg-info bg-opacity-25 text-dark">Zaid (Summer)</span>
+                            {% else %}
+                                <span class="badge bg-secondary bg-opacity-25 text-dark">{{ p.season }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ p.production_date }}</td>
+                        {% if session.get('role') == 'admin' %}<td class="text-center">
+                            <form action="{{ url_for('delete_production', production_id=p.production_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this production record?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Log">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>{% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="no-records-row">
+                        <td colspan="{{ 7 if session.get('role') == 'admin' else 6 }}" class="text-center py-5 text-muted">
+                            <i class="fas fa-seedling display-6 d-block mb-3 text-secondary"></i>
+                            No crop production logs found. Click <strong>Record Production</strong> to create one.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

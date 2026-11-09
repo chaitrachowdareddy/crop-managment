@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Distributor Purchases{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-file-invoice-dollar text-success"></i> Wholesale Purchases
+        </h2>
+        <p class="page-header-subtitle">Bulk crop procurements made by wholesale distributors from central warehouses.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="search-box-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control table-search-input" data-target-table="purchTable" placeholder="Search distributor, crop, warehouse...">
+        </div>
+        <a href="{{ url_for('add_purchase') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> New Purchase
+        </a>
+    </div>
+</div>
+
+<div class="table-custom-wrapper">
+    <div class="table-responsive">
+        <table class="table table-hover table-custom mb-0" id="purchTable">
+            <thead>
+                <tr>
+                    <th>Purch ID</th>
+                    <th>Distributor</th>
+                    <th>Warehouse Hub</th>
+                    <th>Crop Variety</th>
+                    <th>Quantity</th>
+                    <th>Price / Unit (₹)</th>
+                    <th>Total Price (₹)</th>
+                    <th>Purchase Date</th>
+                    {% if session.get('role') == 'admin' %}<th class="text-center">Action</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if purchases %}
+                    {% for p in purchases %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ p.purchase_id }}</td>
+                        <td class="fw-semibold text-dark">{{ p.distributor_name }}</td>
+                        <td class="small text-muted">{{ p.warehouse_name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ p.crop_name }}</span></td>
+                        <td class="fw-bold text-success">{{ p.quantity }} {{ p.unit }}</td>
+                        <td>₹{{ "{:,.2f}".format(p.price_per_unit) }}</td>
+                        <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(p.total_price) }}</td>
+                        <td class="text-muted small">{{ p.purchase_date }}</td>
+                        {% if session.get('role') == 'admin' %}<td class="text-center">
+                            <form action="{{ url_for('delete_purchase', purchase_id=p.purchase_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this purchase record?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Purchase">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>{% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="no-records-row">
+                        <td colspan="{{ 9 if session.get('role') == 'admin' else 8 }}" class="text-center py-5 text-muted">
+                            <i class="fas fa-receipt display-6 d-block mb-3 text-secondary"></i>
+                            No purchase orders found. Click <strong>New Purchase</strong> to record one.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

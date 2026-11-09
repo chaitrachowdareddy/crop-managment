@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Crop Variety{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-plus-circle text-success me-2"></i> Add New Crop Variety
+        </h3>
+        <a href="{{ url_for('list_crops') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Catalog
+        </a>
+    </div>
+
+    <form action="{{ url_for('add_crop') }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label for="crop_name" class="form-label">Crop Name & Variety <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="crop_name" name="crop_name" placeholder="e.g. Rice (Basmati), Wheat (Sharbati)" required>
+                <div class="invalid-feedback">Please enter the crop name and variety.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="crop_type" class="form-label">Crop Classification Type <span class="text-danger">*</span></label>
+                <select class="form-select" id="crop_type" name="crop_type" required>
+                    <option value="" disabled selected>Select crop type...</option>
+                    <option value="Cereal">Cereal (Rice, Wheat, Corn)</option>
+                    <option value="Millet / Grain">Millet / Coarse Grain (Ragi, Bajra, Jowar)</option>
+                    <option value="Pulse">Pulse / Legume (Gram, Tur, Lentil)</option>
+                    <option value="Oilseed">Oilseed (Soybean, Mustard, Groundnut)</option>
+                    <option value="Cash Crop">Cash Crop (Sugarcane, Tobacco)</option>
+                    <option value="Fiber / Cash Crop">Fiber (Cotton, Jute)</option>
+                    <option value="Vegetable">Vegetable (Tomato, Onion, Potato)</option>
+                    <option value="Fruit / Plantation">Fruit / Plantation (Mango, Apple, Coffee)</option>
+                    <option value="Spices">Spices (Chilli, Turmeric, Pepper)</option>
+                </select>
+                <div class="invalid-feedback">Please select a crop classification.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="unit" class="form-label">Measurement Unit <span class="text-danger">*</span></label>
+                <select class="form-select" id="unit" name="unit" required>
+                    <option value="Quintal" selected>Quintal (100 kg)</option>
+                    <option value="Ton">Metric Ton (1000 kg)</option>
+                    <option value="Kg">Kilogram (kg)</option>
+                    <option value="Bag">Standard Gunny Bag (50 kg)</option>
+                    <option value="Crate">Crate (25 kg)</option>
+                </select>
+                <div class="invalid-feedback">Please choose a standard unit.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_crops') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Save Crop
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Consumer Sales Log{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-cart-shopping text-success"></i> Final Consumer Sales Log
+        </h2>
+        <p class="page-header-subtitle">Retail point-of-sale transactions between local retailers and end consumers.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="search-box-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control table-search-input" data-target-table="salesTable" placeholder="Search customer, retailer, crop...">
+        </div>
+        {% if session.get('role') in ('admin', 'retailer') %}
+        <a href="{{ url_for('add_sale') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> New Sale
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="table-custom-wrapper">
+    <div class="table-responsive">
+        <table class="table table-hover table-custom mb-0" id="salesTable">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Customer (Buyer)</th>
+                    <th>Retailer (Store)</th>
+                    <th>Crop Purchased</th>
+                    <th>Quantity</th>
+                    <th>Price / Unit (₹)</th>
+                    <th>Total Price (₹)</th>
+                    <th>Sale Date</th>
+                    {% if session.get('role') == 'admin' %}<th class="text-center">Action</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if sales %}
+                    {% for s in sales %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ s.sale_id }}</td>
+                        <td class="fw-semibold text-dark">{{ s.customer_name }}</td>
+                        <td class="small text-muted">{{ s.retailer_name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ s.crop_name }}</span></td>
+                        <td class="fw-bold text-success">{{ s.quantity }} {{ s.unit }}</td>
+                        <td>₹{{ "{:,.2f}".format(s.price_per_unit) }}</td>
+                        <td class="fw-bold text-dark">₹{{ "{:,.2f}".format(s.total_price) }}</td>
+                        <td class="text-muted small">{{ s.sale_date }}</td>
+                        {% if session.get('role') == 'admin' %}<td class="text-center">
+                            <form action="{{ url_for('delete_sale', sale_id=s.sale_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this sale record?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Sale">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>{% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="no-records-row">
+                        <td colspan="{{ 9 if session.get('role') == 'admin' else 8 }}" class="text-center py-5 text-muted">
+                            <i class="fas fa-cash-register display-6 d-block mb-3 text-secondary"></i>
+                            No retail sales records found. Click <strong>New Sale</strong> to record one.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

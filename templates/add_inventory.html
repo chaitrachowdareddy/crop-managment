@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock In / Adjust Inventory{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-boxes-stacked text-warning me-2"></i> Stock In / Adjust Warehouse Inventory
+        </h3>
+        <a href="{{ url_for('list_inventory') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Inventory
+        </a>
+    </div>
+
+    <form action="{{ url_for('add_inventory') }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="warehouse_id" class="form-label">Warehouse Facility <span class="text-danger">*</span></label>
+                <select class="form-select" id="warehouse_id" name="warehouse_id" required>
+                    <option value="" disabled selected>Select destination warehouse...</option>
+                    {% for w in warehouses %}
+                        <option value="{{ w.warehouse_id }}">{{ w.warehouse_name }} (Capacity: {{ w.capacity }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a warehouse.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="crop_id" class="form-label">Crop Variety <span class="text-danger">*</span></label>
+                <select class="form-select" id="crop_id" name="crop_id" required>
+                    <option value="" disabled selected>Select crop...</option>
+                    {% for c in crops %}
+                        <option value="{{ c.crop_id }}">{{ c.crop_name }} (Unit: {{ c.unit }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a crop.</div>
+            </div>
+
+            <div class="col-md-12">
+                <label for="quantity" class="form-label">Stock Quantity to Set / Add <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control" id="quantity" name="quantity" placeholder="e.g. 500.00" required>
+                <div class="form-text">Note: If this crop already exists in the warehouse, its quantity will be updated.</div>
+                <div class="invalid-feedback">Quantity must be non-negative.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_inventory') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Update Inventory
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

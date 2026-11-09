@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Crop Production{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-seedling text-success me-2"></i> Record Crop Production Output
+        </h3>
+        <a href="{{ url_for('list_production') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Logs
+        </a>
+    </div>
+
+    <form action="{{ url_for('add_production') }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            {% if session.get('role') == 'admin' %}
+            <div class="col-md-6">
+                <label for="farmer_id" class="form-label">Farmer <span class="text-danger">*</span></label>
+                <select class="form-select" id="farmer_id" name="farmer_id" required>
+                    <option value="" disabled selected>Select registered farmer...</option>
+                    {% for f in farmers %}
+                        <option value="{{ f.farmer_id }}">{{ f.name }} ({{ f.village }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a farmer.</div>
+            </div>
+            {% else %}
+            <div class="col-md-6">
+                <label class="form-label">Farmer</label>
+                <input class="form-control" value="{{ farmers[0].name }} ({{ farmers[0].village }})" readonly>
+            </div>
+            {% endif %}
+
+            <div class="col-md-6">
+                <label for="crop_id" class="form-label">Crop Harvested <span class="text-danger">*</span></label>
+                <select class="form-select" id="crop_id" name="crop_id" required>
+                    <option value="" disabled selected>Select crop...</option>
+                    {% for c in crops %}
+                        <option value="{{ c.crop_id }}">{{ c.crop_name }} (Unit: {{ c.unit }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a crop.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="quantity" class="form-label">Harvest Quantity <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0.01" class="form-control" id="quantity" name="quantity" placeholder="e.g. 150.00" required>
+                <div class="invalid-feedback">Quantity must be greater than zero.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="season" class="form-label">Crop Season <span class="text-danger">*</span></label>
+                <select class="form-select" id="season" name="season" required>
+                    <option value="Kharif">Kharif (Monsoon Season)</option>
+                    <option value="Rabi">Rabi (Winter Season)</option>
+                    <option value="Zaid">Zaid (Summer Season)</option>
+                    <option value="Year-round">Year-round / Perennial</option>
+                </select>
+                <div class="invalid-feedback">Please choose a crop season.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="production_date" class="form-label">Harvest Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="production_date" name="production_date" value="{{ today }}" required>
+                <div class="invalid-feedback">Please select harvest date.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_production') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Save Production Log
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

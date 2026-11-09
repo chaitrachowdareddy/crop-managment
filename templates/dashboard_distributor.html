@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Distributor Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div><h1 class="page-header-title mb-1">Distributor Dashboard</h1><p class="page-header-subtitle mb-0">Warehouse availability, your purchases, and your retailer dispatches.</p></div>
+    <div class="d-flex gap-2"><a class="btn btn-success" href="{{ url_for('add_purchase') }}">Place Purchase</a><a class="btn btn-outline-success" href="{{ url_for('add_retail_supply') }}">Dispatch to Retailer</a></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-6"><div class="card card-custom h-100">
+        <div class="card-header fw-bold">Available Warehouse Inventory</div>
+        <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Warehouse</th><th>Crop</th><th>Available</th></tr></thead>
+        <tbody>{% for row in inventory %}<tr><td>{{ row.warehouse_name }}</td><td>{{ row.crop_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td></tr>{% else %}<tr><td colspan="3" class="text-center text-muted">No available inventory.</td></tr>{% endfor %}</tbody></table></div>
+    </div></div>
+    <div class="col-lg-6"><div class="card card-custom h-100">
+        <div class="card-header fw-bold">My Wholesale Purchases</div>
+        <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Crop</th><th>Warehouse</th><th>Quantity</th><th>Total</th></tr></thead>
+        <tbody>{% for row in purchases %}<tr><td>{{ row.crop_name }}</td><td>{{ row.warehouse_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td><td>₹{{ "{:,.2f}".format(row.total_price|float) }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted">No purchases recorded.</td></tr>{% endfor %}</tbody></table></div>
+    </div></div>
+    <div class="col-12"><div class="card card-custom">
+        <div class="card-header fw-bold">My Retailer Dispatches</div>
+        <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Retailer</th><th>Crop</th><th>Quantity</th><th>Total</th><th>Date</th></tr></thead>
+        <tbody>{% for row in dispatches %}<tr><td>{{ row.retailer_name }}</td><td>{{ row.crop_name }}</td><td>{{ row.quantity }} {{ row.unit }}</td><td>₹{{ "{:,.2f}".format(row.total_price|float) }}</td><td>{{ row.supply_date }}</td></tr>{% else %}<tr><td colspan="5" class="text-center text-muted">No dispatches recorded.</td></tr>{% endfor %}</tbody></table></div>
+    </div></div>
+</div>
+{% endblock %}

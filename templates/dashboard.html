@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Analytics & Overview{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="page-header-title mb-1">
+            <i class="fas fa-chart-pie text-success"></i> Supply Chain Analytics Dashboard
+        </h2>
+        <p class="page-header-subtitle">Real-time relational overview of agricultural nodes, inventory levels, and commercial transactions.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('reports') }}" class="btn btn-outline-custom">
+            <i class="fas fa-file-invoice me-1"></i> Full DBMS Reports
+        </a>
+        <a href="{{ url_for('add_supply') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Record New Supply
+        </a>
+    </div>
+</div>
+
+<!-- 8 Key Metrics Cards -->
+<div class="row g-3 mb-4">
+    <!-- Farmers -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_farmers') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_farmers }}</div>
+                    <div class="stat-label">Total Farmers</div>
+                </div>
+                <div class="stat-icon stat-green"><i class="fas fa-user-tie"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Crops -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_crops') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_crops }}</div>
+                    <div class="stat-label">Crops in Catalog</div>
+                </div>
+                <div class="stat-icon stat-amber"><i class="fas fa-wheat-awn"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Collection Centers -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_collection_centers') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_centers }}</div>
+                    <div class="stat-label">Collection Hubs</div>
+                </div>
+                <div class="stat-icon stat-blue"><i class="fas fa-building"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Warehouses -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_warehouses') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_warehouses }}</div>
+                    <div class="stat-label">Warehouses</div>
+                </div>
+                <div class="stat-icon stat-green"><i class="fas fa-warehouse"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Distributors -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_distributors') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_distributors }}</div>
+                    <div class="stat-label">Distributors</div>
+                </div>
+                <div class="stat-icon stat-amber"><i class="fas fa-truck-ramp-box"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Retailers -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_retailers') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_retailers }}</div>
+                    <div class="stat-label">Retail Outlets</div>
+                </div>
+                <div class="stat-icon stat-blue"><i class="fas fa-store"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Customers -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_customers') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ stats.total_customers }}</div>
+                    <div class="stat-label">End Customers</div>
+                </div>
+                <div class="stat-icon stat-green"><i class="fas fa-users"></i></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Available Stock -->
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('list_inventory') }}" class="text-decoration-none">
+            <div class="stat-card bg-success bg-opacity-10 border-success">
+                <div>
+                    <div class="stat-value text-success">{{ stats.total_stock|round(1) }}</div>
+                    <div class="stat-label text-success fw-bold">Total Stock (Units)</div>
+                </div>
+                <div class="stat-icon stat-green"><i class="fas fa-boxes-stacked"></i></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div>
+                <div class="stat-value text-dark">₹{{ "{:,.2f}".format(stats.total_turnover|float) }}</div>
+                <div class="stat-label">Total Consumer Turnover</div>
+            </div>
+            <div class="stat-icon stat-amber"><i class="fas fa-indian-rupee-sign"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div>
+                <div class="stat-value text-danger">{{ stats.inventory_alerts }}</div>
+                <div class="stat-label">Out-of-stock Alerts</div>
+            </div>
+            <div class="stat-icon stat-blue"><i class="fas fa-triangle-exclamation"></i></div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="row g-4 mb-4">
+    <!-- Recent Crop Supplies (Farmer -> Center) -->
+    <div class="col-lg-7">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-dolly text-success me-2"></i> Recent Crop Supplies</h5>
+                <a href="{{ url_for('list_supply') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Farmer</th>
+                            <th>Crop</th>
+                            <th>Center</th>
+                            <th>Qty</th>
+                            <th>Total (₹)</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_supplies %}
+                            {% for s in recent_supplies %}
+                            <tr>
+                                <td class="fw-semibold">{{ s.farmer_name }}</td>
+                                <td><span class="badge bg-light text-dark border">{{ s.crop_name }}</span></td>
+                                <td class="small text-muted">{{ s.center_name }}</td>
+                                <td class="fw-bold text-success">{{ s.quantity }} {{ s.unit }}</td>
+                                <td>₹{{ "{:,.2f}".format(s.total_amount) }}</td>
+                                <td class="small text-muted">{{ s.supply_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No crop supply records found.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Logistics / Transportation -->
+    <div class="col-lg-5">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-truck text-primary me-2"></i> Active Shipments</h5>
+                <a href="{{ url_for('list_transportation') }}" class="btn btn-sm btn-outline-secondary">Logistics</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Route</th>
+                            <th>Crop & Qty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if active_transports %}
+                            {% for t in active_transports %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold small text-truncate" style="max-width: 140px;" title="{{ t.source }} &rarr; {{ t.destination }}">
+                                        {{ t.source }} &rarr; {{ t.destination }}
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">Vehicle: {{ t.vehicle_number }}</div>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold">{{ t.crop_name }}</div>
+                                    <div class="small text-muted">{{ t.quantity }} {{ t.unit }}</div>
+                                </td>
+                                <td>
+                                    {% if t.status == 'Delivered' %}
+                                        <span class="badge badge-status badge-delivered"><i class="fas fa-check me-1"></i>Delivered</span>
+                                    {% elif t.status == 'In Transit' %}
+                                        <span class="badge badge-status badge-in-transit"><i class="fas fa-truck-fast me-1"></i>In Transit</span>
+                                    {% else %}
+                                        <span class="badge badge-status badge-pending"><i class="fas fa-clock me-1"></i>Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">No active transport logs.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row: Inventory & Recent Sales -->
+<div class="row g-4">
+    <!-- Low Stock Inventory Alerts -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-triangle-exclamation text-warning me-2"></i> Warehouse Stock Levels</h5>
+                <a href="{{ url_for('list_inventory') }}" class="btn btn-sm btn-outline-secondary">Inventory</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Warehouse</th>
+                            <th>Crop</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if stock_levels %}
+                            {% for inv in stock_levels %}
+                            <tr>
+                                <td class="fw-semibold small">{{ inv.warehouse_name }}</td>
+                                <td>{{ inv.crop_name }}</td>
+                                <td class="fw-bold">{{ inv.quantity }} {{ inv.unit }}</td>
+                                <td>
+                                    {% if inv.quantity < 300 %}
+                                        <span class="badge bg-danger">Low Stock</span>
+                                    {% elif inv.quantity < 600 %}
+                                        <span class="badge bg-warning text-dark">Moderate</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Adequate</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No inventory records.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Retail Sales -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-cart-shopping text-success me-2"></i> Recent Retail Sales</h5>
+                <a href="{{ url_for('list_sales') }}" class="btn btn-sm btn-outline-secondary">Sales Log</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Retailer</th>
+                            <th>Crop</th>
+                            <th>Qty</th>
+                            <th>Total (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_sales %}
+                            {% for sale in recent_sales %}
+                            <tr>
+                                <td class="fw-semibold">{{ sale.customer_name }}</td>
+                                <td class="small text-muted">{{ sale.retailer_name }}</td>
+                                <td>{{ sale.crop_name }}</td>
+                                <td>{{ sale.quantity }} {{ sale.unit }}</td>
+                                <td class="fw-bold text-success">₹{{ "{:,.2f}".format(sale.total_price) }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No sales records found.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

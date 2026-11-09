@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Order{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="page-header-title mb-1">Track your order</h1>
+        <p class="page-header-subtitle">Enter one of your order IDs to see delivery progress.</p>
+    </div>
+    <a href="{{ url_for('customer_shop') }}" class="btn btn-outline-custom">
+        <i class="fas fa-store me-2"></i>Continue Shopping
+    </a>
+</div>
+
+<div class="tracking-shell">
+    <form method="POST" class="tracking-search">
+        <input type="text" class="tracking-input" name="sale_id" value="{{ sale_id or '' }}" placeholder="Order ID" aria-label="Order ID" required>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-magnifying-glass me-2"></i>Track
+        </button>
+    </form>
+
+    {% if result %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="text-muted small text-uppercase mb-2">Order status</div>
+            <span class="status-pill">{{ result.status_label }}</span>
+        </div>
+        <div class="text-md-end">
+            <div class="text-muted small">Estimated arrival</div>
+            <strong>{{ result.estimated_arrival }}</strong>
+        </div>
+    </div>
+
+    <div class="tracking-timeline">
+        {% for item in result.timeline %}
+        <div class="tracking-step {% if item.done %}done{% endif %}">
+            <div class="dot"></div>
+            <div class="fw-semibold">{{ item.label }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-7">
+            <div class="order-detail-box">
+                <h4 class="mb-3">Shipment details</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <p><strong>Order ID:</strong> #{{ result.sale_id }}</p>
+                        <p><strong>Product:</strong> {{ result.crop_name }}</p>
+                        <p><strong>Qty:</strong> {{ result.order_quantity }} {{ result.unit }}</p>
+                        <p><strong>Price:</strong> ₹{{ '%.2f'|format(result.total_price|float) }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Customer:</strong> {{ result.customer_name }}</p>
+                        <p><strong>Phone:</strong> {{ result.phone }}</p>
+                        <p><strong>Retailer:</strong> {{ result.retailer_name }}</p>
+                        <p><strong>Delivery to:</strong> {{ result.destination or result.address }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="order-detail-box">
+                <h4 class="mb-3">Driver & vehicle</h4>
+                <p><strong>Driver:</strong> {{ result.driver_name or 'Awaiting assignment' }}</p>
+                <p><strong>Vehicle:</strong> {{ result.vehicle_number or 'Being assigned' }}</p>
+                <p><strong>Phone:</strong> {{ result.driver_phone or 'N/A' }}</p>
+                <p><strong>Source:</strong> {{ result.source or result.retailer_name }}</p>
+                <p><strong>Order date:</strong> {{ result.sale_date }}</p>
+            </div>
+        </div>
+    </div>
+    {% elif sale_id %}
+    <div class="card form-card text-center py-5 mt-4">
+        <h4 class="mb-2">No order found</h4>
+        <p class="text-muted mb-0">We could not find one of your orders with that ID. Please try again.</p>
+    </div>
+    {% else %}
+    <div class="card form-card text-center py-5 mt-4">
+        <h4 class="mb-2">Enter your order details</h4>
+        <p class="text-muted mb-0">Use an order ID from your purchase history to check delivery status.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

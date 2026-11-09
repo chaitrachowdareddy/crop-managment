@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crop Supply Chain Management System{% endblock %} - AgriChain DBMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-xl navbar-dark navbar-custom sticky-top">
+        <div class="container-fluid px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+                <span class="brand-mark"><i class="fas fa-seedling"></i></span>
+                <span>Agri<strong class="text-warning">Chain</strong></span>
+                <span class="brand-badge d-none d-md-inline-flex">Smart Agri OS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-xl-0 gap-xl-1">
+                    {% if session.get('user_id') %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active text-warning fw-bold{% endif %}" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-chart-line me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    {% if session.get('role') == 'admin' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="farmDropdown" role="button" data-bs-toggle="dropdown">Farm</a>
+                        <ul class="dropdown-menu shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('list_farmers') }}">Farmers</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_crops') }}">Crop Catalog</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_production') }}">Production</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_supply') }}">Farmer Supplies</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="storageDropdown" role="button" data-bs-toggle="dropdown">Storage</a>
+                        <ul class="dropdown-menu shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('list_collection_centers') }}">Collection Centers</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_warehouses') }}">Warehouses</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_inventory') }}">Inventory</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="tradeDropdown" role="button" data-bs-toggle="dropdown">Trade & Retail</a>
+                        <ul class="dropdown-menu shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('list_distributors') }}">Distributors</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_purchases') }}">Wholesale Purchases</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_retailers') }}">Retailers</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_retail_supplies') }}">Retail Supplies</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="logisticsDropdown" role="button" data-bs-toggle="dropdown">Logistics & Sales</a>
+                        <ul class="dropdown-menu shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('list_vehicles') }}">Fleet</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_transportation') }}">Transportation</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_customers') }}">Customers</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('list_sales') }}">Consumer Sales</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('reports') }}">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_shop') }}">Customer Store</a></li>
+                    {% elif session.get('role') == 'farmer' %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">My Farm Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_production') }}">Production</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_supply') }}">My Supplies & Earnings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_production') }}">Record Production</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_supply') }}">Submit Supply</a></li>
+                    {% elif session.get('role') == 'distributor' %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_inventory') }}">Warehouse Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_purchases') }}">My Purchases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_purchase') }}">Place Purchase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_retail_supplies') }}">My Dispatches</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_retail_supply') }}">Dispatch to Retailer</a></li>
+                    {% elif session.get('role') == 'retailer' %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_retail_supplies') }}">Received Stock</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_sales') }}">My Sales</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_sale') }}">Record Sale</a></li>
+                    {% elif session.get('role') == 'customer' %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_shop') }}">Retail Store</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('list_sales') }}">Purchase History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_track') }}">Track Order</a></li>
+                    {% endif %}
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    {% if session.get('user_id') %}
+                    <span class="badge bg-light text-dark">Logged in as: {{ session.get('username') }} ({{ session.get('role')|capitalize }})</span>
+                    {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('db_setup') }}" class="btn btn-sm btn-outline-light">DB Setup</a>
+                    {% endif %}
+                    {% if session.get('role') in ('admin', 'farmer') %}
+                    <a href="{{ url_for('add_supply') }}" class="btn btn-sm btn-warning fw-semibold">New Supply</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-light">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show shadow-sm" role="alert">
+                        <div class="d-flex align-items-center gap-2">
+                            {% if category == 'success' %}
+                                <i class="fas fa-check-circle fa-lg"></i>
+                            {% elif category == 'warning' %}
+                                <i class="fas fa-triangle-exclamation fa-lg"></i>
+                            {% elif category == 'info' %}
+                                <i class="fas fa-info-circle fa-lg"></i>
+                            {% else %}
+                                <i class="fas fa-circle-exclamation fa-lg"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container my-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start mb-2 mb-md-0">
+                    <span class="fw-bold text-white"><i class="fas fa-seedling text-warning me-1"></i> Crop Supply Chain Management System</span>
+                    <p class="small text-muted mb-0">College DBMS Project • Python Flask & MySQL</p>
+                </div>
+                <div class="col-md-6 text-md-end small">
+                    <span class="text-secondary">Farmer &rarr; Production &rarr; Collection Center &rarr; Warehouse &rarr; Distributor &rarr; Retailer &rarr; Customer</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Application JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

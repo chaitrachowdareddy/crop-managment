@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Crop Supply Chain System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-banner text-center text-md-start">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <div class="d-inline-flex align-items-center gap-2 bg-success bg-opacity-50 px-3 py-1 rounded-pill mb-3 text-warning fw-semibold small">
+                <i class="fas fa-database"></i> College DBMS Project • 3NF Normalized Architecture
+            </div>
+            <h1 class="display-5 fw-bold mb-3">Crop Supply Chain Management System</h1>
+            <p class="lead mb-4 text-light text-opacity-90">
+                An end-to-end relational database management system tracking agricultural commodities from farm production to retail customer sales.
+            </p>
+            <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-warning btn-lg fw-bold px-4">
+                    <i class="fas fa-chart-line me-2"></i> Launch Dashboard
+                </a>
+                <a href="{{ url_for('reports') }}" class="btn btn-outline-light btn-lg fw-semibold px-4">
+                    <i class="fas fa-file-invoice me-2"></i> View 11 DBMS Reports
+                </a>
+                <a href="{{ url_for('db_setup') }}" class="btn btn-outline-warning btn-lg fw-semibold px-4">
+                    <i class="fas fa-server me-2"></i> DB Setup & Health
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 d-none d-lg-block text-center">
+            <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25 shadow-lg backdrop-blur">
+                <i class="fas fa-wheat-awn text-warning display-1 mb-3"></i>
+                <h5 class="text-white fw-bold">7-Tier Lifecycle</h5>
+                <p class="small text-light text-opacity-75 mb-0">From harvesting to consumer consumption with automated inventory tracking and relational integrity.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7-Stage Interactive Supply Chain Flowchart -->
+<div class="mb-5">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="fas fa-diagram-project text-success me-2"></i> Agricultural Supply Chain Lifecycle</h3>
+        <p class="text-muted">Explore each tier of the relational model. Click any node to manage entities.</p>
+    </div>
+
+    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-7 text-center">
+        <!-- Stage 1: Farmer -->
+        <div class="col">
+            <a href="{{ url_for('list_farmers') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-success"><i class="fas fa-user-tie"></i></div>
+                    <span class="badge bg-success mb-2">Stage 1</span>
+                    <h6 class="fw-bold text-dark mb-1">Farmer</h6>
+                    <p class="small text-muted mb-0">Producer Profile</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 2: Crop Production -->
+        <div class="col">
+            <a href="{{ url_for('list_production') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-primary"><i class="fas fa-seedling"></i></div>
+                    <span class="badge bg-primary mb-2">Stage 2</span>
+                    <h6 class="fw-bold text-dark mb-1">Production</h6>
+                    <p class="small text-muted mb-0">Seasonal Yield</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 3: Collection Center -->
+        <div class="col">
+            <a href="{{ url_for('list_collection_centers') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-info"><i class="fas fa-building-circle-check"></i></div>
+                    <span class="badge bg-info text-dark mb-2">Stage 3</span>
+                    <h6 class="fw-bold text-dark mb-1">Collection</h6>
+                    <p class="small text-muted mb-0">Regional Mandis</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 4: Warehouse -->
+        <div class="col">
+            <a href="{{ url_for('list_warehouses') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-secondary"><i class="fas fa-warehouse"></i></div>
+                    <span class="badge bg-secondary mb-2">Stage 4</span>
+                    <h6 class="fw-bold text-dark mb-1">Warehouse</h6>
+                    <p class="small text-muted mb-0">Stock Inventory</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 5: Distributor -->
+        <div class="col">
+            <a href="{{ url_for('list_distributors') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-warning"><i class="fas fa-truck-ramp-box"></i></div>
+                    <span class="badge bg-warning text-dark mb-2">Stage 5</span>
+                    <h6 class="fw-bold text-dark mb-1">Distributor</h6>
+                    <p class="small text-muted mb-0">Wholesale Buyer</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 6: Retailer -->
+        <div class="col">
+            <a href="{{ url_for('list_retailers') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-primary"><i class="fas fa-store"></i></div>
+                    <span class="badge bg-primary mb-2">Stage 6</span>
+                    <h6 class="fw-bold text-dark mb-1">Retailer</h6>
+                    <p class="small text-muted mb-0">Local Outlets</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stage 7: Customer -->
+        <div class="col">
+            <a href="{{ url_for('list_customers') }}" class="text-decoration-none">
+                <div class="flow-step h-100 card-custom">
+                    <div class="flow-step-icon text-danger"><i class="fas fa-cart-shopping"></i></div>
+                    <span class="badge bg-danger mb-2">Stage 7</span>
+                    <h6 class="fw-bold text-dark mb-1">Customer</h6>
+                    <p class="small text-muted mb-0">End Consumer</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- DBMS Project Highlights -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-4">
+        <div class="card h-100 card-custom p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon stat-green"><i class="fas fa-network-wired"></i></div>
+                <h5 class="fw-bold mb-0">Relational Architecture</h5>
+            </div>
+            <p class="text-muted small">
+                Completely designed with 15 normalized tables (3NF), Foreign Key relationships with cascade rules, and check constraints to guarantee database integrity.
+            </p>
+            <ul class="list-unstyled small text-secondary mb-0">
+                <li><i class="fas fa-check text-success me-2"></i> One-to-Many & Many-to-Many</li>
+                <li><i class="fas fa-check text-success me-2"></i> Referential Integrity Constraints</li>
+                <li><i class="fas fa-check text-success me-2"></i> Domain & Check Constraints</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100 card-custom p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon stat-blue"><i class="fas fa-gears"></i></div>
+                <h5 class="fw-bold mb-0">Advanced SQL Features</h5>
+            </div>
+            <p class="text-muted small">
+                Demonstrates Stored Procedures, automated SQL Triggers for inventory calculation, complex multi-table JOINs, Subqueries, and Aggregate functions.
+            </p>
+            <ul class="list-unstyled small text-secondary mb-0">
+                <li><i class="fas fa-check text-success me-2"></i> SQL Triggers & Procedures</li>
+                <li><i class="fas fa-check text-success me-2"></i> Database Views (Reporting)</li>
+                <li><i class="fas fa-check text-success me-2"></i> GROUP BY & HAVING Clauses</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100 card-custom p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon stat-amber"><i class="fas fa-shield-halved"></i></div>
+                <h5 class="fw-bold mb-0">Secure Parameterized SQL</h5>
+            </div>
+            <p class="text-muted small">
+                Prevents SQL Injection attacks across all CRUD forms using parameterized prepared queries. Validates phone numbers, positive prices, and stock limits.
+            </p>
+            <ul class="list-unstyled small text-secondary mb-0">
+                <li><i class="fas fa-check text-success me-2"></i> Parameterized SQL Queries</li>
+                <li><i class="fas fa-check text-success me-2"></i> Client & Server Validation</li>
+                <li><i class="fas fa-check text-success me-2"></i> Atomic Transactions</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Consumer Sale{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-cart-plus text-success me-2"></i> Record Consumer Sale
+        </h3>
+        <a href="{{ url_for('list_sales') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Sales
+        </a>
+    </div>
+
+    <form action="{{ url_for('add_sale') }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            {% if session.get('role') == 'admin' %}
+            <div class="col-md-6">
+                <label for="customer_id" class="form-label">Customer (Buyer) <span class="text-danger">*</span></label>
+                <select class="form-select" id="customer_id" name="customer_id" required>
+                    <option value="" disabled selected>Select customer...</option>
+                    {% for cu in customers %}
+                        <option value="{{ cu.customer_id }}">{{ cu.customer_name }} ({{ cu.phone }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a customer.</div>
+            </div>
+            {% else %}
+            <div class="col-md-6">
+                <label for="customer_name" class="form-label">Customer Name <span class="text-danger">*</span></label>
+                <input id="customer_name" name="customer_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="customer_phone" class="form-label">Customer Phone <span class="text-danger">*</span></label>
+                <input id="customer_phone" name="customer_phone" type="tel" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="customer_address" class="form-label">Customer Address <span class="text-danger">*</span></label>
+                <input id="customer_address" name="customer_address" class="form-control" required>
+            </div>
+            {% endif %}
+
+            {% if session.get('role') == 'admin' %}
+            <div class="col-md-6">
+                <label for="retailer_id" class="form-label">Selling Retailer Store <span class="text-danger">*</span></label>
+                <select class="form-select" id="retailer_id" name="retailer_id" required>
+                    <option value="" disabled selected>Select retailer...</option>
+                    {% for r in retailers %}
+                        <option value="{{ r.retailer_id }}">{{ r.retailer_name }} ({{ r.address }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a retailer.</div>
+            </div>
+            {% else %}
+            <div class="col-md-6">
+                <label class="form-label">Selling Retailer Store</label>
+                <input class="form-control" value="{{ retailers[0].retailer_name }}" readonly>
+            </div>
+            {% endif %}
+
+            <div class="col-md-6">
+                <label for="crop_id" class="form-label">Crop Purchased <span class="text-danger">*</span></label>
+                <select class="form-select" id="crop_id" name="crop_id" required>
+                    <option value="" disabled selected>Select crop...</option>
+                    {% for c in crops %}
+                        <option value="{{ c.crop_id }}">{{ c.crop_name }} (Unit: {{ c.unit }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a crop.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="sale_date" class="form-label">Sale Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="sale_date" name="sale_date" value="{{ today }}" required>
+                <div class="invalid-feedback">Please select sale date.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="calc_quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0.01" class="form-control" id="calc_quantity" name="quantity" placeholder="e.g. 5.00" required>
+                <div class="invalid-feedback">Quantity must be greater than zero.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="calc_price" class="form-label">Price per Unit (₹) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control" id="calc_price" name="price_per_unit" placeholder="e.g. 5200.00" required>
+                <div class="invalid-feedback">Price must be non-negative.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="calc_total" class="form-label">Total Amount (₹)</label>
+                <input type="text" class="form-control bg-light fw-bold text-success" id="calc_total" name="total_price" readonly placeholder="Auto-calculated">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_sales') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Record Sale
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

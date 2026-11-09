@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Database Setup & Status - AgriChain DBMS{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="page-header-title mb-1">
+        <i class="fas fa-database text-primary"></i> Database Configuration & Diagnostics
+    </h2>
+    <p class="page-header-subtitle">Inspect MySQL connection status, verify table schemas, or initialize the database.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Connection Status Card -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 p-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="fas fa-signal {% if db_status %}text-success{% else %}text-danger{% endif %}"></i>
+                Connection Status
+            </h5>
+
+            <div class="p-3 rounded-3 mb-3 {% if db_status %}bg-success bg-opacity-10 border border-success border-opacity-25{% else %}bg-danger bg-opacity-10 border border-danger border-opacity-25{% endif %}">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge {% if db_status %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if db_status %}CONNECTED{% else %}NOT CONNECTED / OFFLINE{% endif %}
+                    </span>
+                    <span class="fw-bold text-dark">{{ db_message }}</span>
+                </div>
+                {% if db_status %}
+                    <p class="small text-muted mb-0">Detected <strong>{{ tables_count }}</strong> tables initialized in database <code>{{ db_config.database }}</code>.</p>
+                {% else %}
+                    <p class="small text-danger mb-0">The application cannot reach MySQL with current settings. Follow the instructions on the right to set up MySQL.</p>
+                {% endif %}
+            </div>
+
+            <h6 class="fw-bold text-secondary mb-2">Current Active Configuration (from .env / config.py):</h6>
+            <table class="table table-sm table-bordered small">
+                <tbody>
+                    <tr><th class="bg-light w-40">DB_HOST</th><td><code>{{ db_config.host }}</code></td></tr>
+                    <tr><th class="bg-light">DB_PORT</th><td><code>{{ db_config.port }}</code></td></tr>
+                    <tr><th class="bg-light">DB_USER</th><td><code>{{ db_config.user }}</code></td></tr>
+                    <tr><th class="bg-light">DB_PASSWORD</th><td><code>{{ '******' if db_config.password else '(blank / empty)' }}</code></td></tr>
+                    <tr><th class="bg-light">DB_NAME</th><td><code>{{ db_config.database }}</code></td></tr>
+                </tbody>
+            </table>
+
+            <!-- One-Click Database Initializer -->
+            <div class="mt-3 p-3 bg-light rounded-3 border">
+                <h6 class="fw-bold text-dark mb-1"><i class="fas fa-wand-magic-sparkles text-primary me-2"></i> Auto-Initialize from Web UI</h6>
+                <p class="small text-muted mb-3">If MySQL is running and user credentials match, you can initialize or reset the tables and sample data with one click:</p>
+                <form action="{{ url_for('init_db_route') }}" method="POST" onsubmit="return confirm('This will execute schema.sql and sample_data.sql. Any existing data will be reset. Proceed?');">
+                    <button type="submit" class="btn btn-sm btn-primary-custom">
+                        <i class="fas fa-play me-1"></i> Run Schema & Sample Data Setup
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step-by-Step MySQL Setup Guide -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 p-4">
+            <h5 class="fw-bold mb-3"><i class="fas fa-book-open text-warning me-2"></i> Beginner's Guide to Setup MySQL</h5>
+
+            <div class="accordion" id="setupAccordion">
+                <!-- Step 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <strong>Step 1: Install MySQL Server / XAMPP</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body small text-muted">
+                            <p>You can use either standard <strong>MySQL Community Server</strong>, <strong>MySQL Workbench</strong>, or <strong>XAMPP (phpMyAdmin)</strong>.</p>
+                            <ul>
+                                <li>If using <strong>XAMPP</strong>: Open XAMPP Control Panel and click <strong>Start</strong> next to MySQL.</li>
+                                <li>If using <strong>MySQL Server</strong>: Ensure the Windows MySQL service is running.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <strong>Step 2: Import SQL Files via Command Line</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body small text-muted">
+                            <p>Open Command Prompt in the project folder and run:</p>
+                            <pre class="bg-dark text-light p-2 rounded"><code>mysql -u root -p &lt; database/schema.sql
+mysql -u root -p &lt; database/sample_data.sql</code></pre>
+                            <p class="mb-0">Enter your MySQL root password when prompted.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <strong>Step 3: Import via MySQL Workbench / phpMyAdmin</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body small text-muted">
+                            <ol class="mb-0">
+                                <li>Open <strong>phpMyAdmin</strong> (<code>http://localhost/phpmyadmin</code>) or <strong>MySQL Workbench</strong>.</li>
+                                <li>Click on the <strong>Import</strong> tab.</li>
+                                <li>Choose <code>database/schema.sql</code> and click <strong>Go / Execute</strong>.</li>
+                                <li>Choose <code>database/sample_data.sql</code> and click <strong>Go / Execute</strong>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <strong>Step 4: Update .env with Your Password</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body small text-muted">
+                            <p>Open the <code>.env</code> file in this folder and update <code>DB_PASSWORD</code> to your MySQL password:</p>
+                            <pre class="bg-dark text-light p-2 rounded"><code>DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_actual_password_here
+DB_NAME=crop_supply_chain</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

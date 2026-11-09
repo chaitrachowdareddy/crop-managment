@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Fleet Vehicle{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-truck-pickup text-secondary me-2"></i> Register New Fleet Vehicle
+        </h3>
+        <a href="{{ url_for('list_vehicles') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Fleet
+        </a>
+    </div>
+
+    <form action="{{ url_for('add_vehicle') }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="vehicle_number" class="form-label">Vehicle Registration Number <span class="text-danger">*</span></label>
+                <input type="text" class="form-control font-monospace" id="vehicle_number" name="vehicle_number" placeholder="e.g. PB-11-AB-1234, KA-04-EF-9012" required>
+                <div class="invalid-feedback">Please enter the registration number.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="vehicle_type" class="form-label">Vehicle Body / Category Type <span class="text-danger">*</span></label>
+                <select class="form-select" id="vehicle_type" name="vehicle_type" required>
+                    <option value="" disabled selected>Select vehicle type...</option>
+                    <option value="Heavy Commercial Truck (16T)">Heavy Commercial Truck (16T)</option>
+                    <option value="Medium Freight Truck (10T)">Medium Freight Truck (10T)</option>
+                    <option value="Mini Cargo Truck (3.5T)">Mini Cargo Truck (3.5T)</option>
+                    <option value="Refrigerated Container Van">Refrigerated Container Van (Cold Chain)</option>
+                    <option value="Tractor-Trailer Carrier">Tractor-Trailer Carrier</option>
+                </select>
+                <div class="invalid-feedback">Please choose a vehicle type.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="driver_name" class="form-label">Primary Driver Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="driver_name" name="driver_name" placeholder="e.g. Satnam Singh" required>
+                <div class="invalid-feedback">Please enter the driver's name.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="driver_phone" class="form-label">Driver Phone Number <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="driver_phone" name="driver_phone" placeholder="10-digit mobile number" pattern="[0-9]{10,15}" required>
+                <div class="invalid-feedback">Please enter a valid driver phone number.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_vehicles') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Save Vehicle
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

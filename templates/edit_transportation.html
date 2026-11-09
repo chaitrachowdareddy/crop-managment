@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Shipment #{{ trans.transport_id }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-edit text-primary me-2"></i> Update Shipment Status & Route
+        </h3>
+        <a href="{{ url_for('list_transportation') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Shipments
+        </a>
+    </div>
+
+    <form action="{{ url_for('edit_transportation', transport_id=trans.transport_id) }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="vehicle_id" class="form-label">Assigned Vehicle <span class="text-danger">*</span></label>
+                <select class="form-select" id="vehicle_id" name="vehicle_id" required>
+                    {% for v in vehicles %}
+                        <option value="{{ v.vehicle_id }}" {% if v.vehicle_id == trans.vehicle_id %}selected{% endif %}>
+                            {{ v.vehicle_number }} - {{ v.driver_name }} ({{ v.vehicle_type }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please assign a vehicle.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="crop_id" class="form-label">Crop in Transit <span class="text-danger">*</span></label>
+                <select class="form-select" id="crop_id" name="crop_id" required>
+                    {% for c in crops %}
+                        <option value="{{ c.crop_id }}" {% if c.crop_id == trans.crop_id %}selected{% endif %}>
+                            {{ c.crop_name }} (Unit: {{ c.unit }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Please select a crop.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="source" class="form-label">Origin / Source <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="source" name="source" value="{{ trans.source }}" required>
+                <div class="invalid-feedback">Please specify origin.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="destination" class="form-label">Destination <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="destination" name="destination" value="{{ trans.destination }}" required>
+                <div class="invalid-feedback">Please specify destination.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0.01" class="form-control" id="quantity" name="quantity" value="{{ trans.quantity }}" required>
+                <div class="invalid-feedback">Quantity must be greater than zero.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="transport_date" class="form-label">Shipment Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="transport_date" name="transport_date" value="{{ trans.transport_date }}" required>
+                <div class="invalid-feedback">Please select date.</div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="status" class="form-label">Current Transit Status <span class="text-danger">*</span></label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="Pending" {% if trans.status == 'Pending' %}selected{% endif %}>Pending (Scheduled)</option>
+                    <option value="In Transit" {% if trans.status == 'In Transit' %}selected{% endif %}>In Transit (On the road)</option>
+                    <option value="Delivered" {% if trans.status == 'Delivered' %}selected{% endif %}>Delivered (Arrived at destination)</option>
+                </select>
+                <div class="invalid-feedback">Please select status.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_transportation') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Update Shipment
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

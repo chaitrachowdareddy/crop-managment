@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Collection Center #{{ center.center_id }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h3 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-edit text-primary me-2"></i> Edit Collection Center
+        </h3>
+        <a href="{{ url_for('list_collection_centers') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Centers
+        </a>
+    </div>
+
+    <form action="{{ url_for('edit_collection_center', center_id=center.center_id) }}" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label for="center_name" class="form-label">Collection Center Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="center_name" name="center_name" value="{{ center.center_name }}" required>
+                <div class="invalid-feedback">Please enter the center name.</div>
+            </div>
+
+            <div class="col-md-12">
+                <label for="location" class="form-label">Physical Location & Address <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="location" name="location" value="{{ center.location }}" required>
+                <div class="invalid-feedback">Please enter location.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="manager_name" class="form-label">Center Manager Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="manager_name" name="manager_name" value="{{ center.manager_name }}" required>
+                <div class="invalid-feedback">Please enter manager name.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="contact" class="form-label">Contact Phone <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="contact" name="contact" value="{{ center.contact }}" pattern="[0-9]{10,15}" required>
+                <div class="invalid-feedback">Please enter a valid phone number.</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{{ url_for('list_collection_centers') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-save me-1"></i> Update Center
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
